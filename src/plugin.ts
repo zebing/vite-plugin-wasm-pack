@@ -41,11 +41,11 @@ export default async function wasmPackPlugin(userConfig: UserConfig, mode: Mode)
     watcher.watch(watchFiles, watchDirectories, Date.now() - 10000);
 
     watcher.on('aggregated', () => {
-      buildWasmPack(flags, options, args, isDev);
+      buildWasmPack(flags, options, args);
     })
   }
 
-  await buildWasmPack(flags, options, args, isDev);
+  await buildWasmPack(flags, options, args);
 }
 
 const checkWasmPack = (): boolean => {
@@ -53,7 +53,7 @@ const checkWasmPack = (): boolean => {
   return existsSync(binPath);
 }
 
-const buildWasmPack = (flags: string, options: string, args: string, isDev: boolean): Promise<any> => {
+const buildWasmPack = (flags: string, options: string, args: string): Promise<any> => {
   const wasmPackBin = findWasmPack()
   const allArgs = 
     `${flags} ${options} build ${args}`
@@ -66,7 +66,7 @@ const buildWasmPack = (flags: string, options: string, args: string, isDev: bool
       stdio: 'inherit',
   }
 
-  info(`ℹ️  Compiling your crate in ${isDev ? 'development' : 'release'} mode...\n`);
+  console.log(`> wasm-pack ${allArgs.join(' ')}`);
   return runSpawn(wasmPackBin, allArgs, spawnOptions);
 }
 
