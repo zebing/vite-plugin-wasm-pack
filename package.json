@@ -21,7 +21,15 @@
     "type": "git",
     "url": "git+https://github.com/zebing/vite-plugin-wasm-pack.git"
   },
-  "keywords": [],
+  "keywords": [
+    "vite",
+    "vite-plugin-wasm-pack",
+    "rust",
+    "wasm-pack",
+    "wasm",
+    "web",
+    "hot reload"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
