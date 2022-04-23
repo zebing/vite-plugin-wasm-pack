@@ -1,6 +1,6 @@
 {
   "name": "@zebing/vite-plugin-wasm-pack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vite plugin for wasm-pack, make rust projects and web projects coexist",
   "main": "dist/index.js",
   "scripts": {
