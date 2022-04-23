@@ -40,7 +40,7 @@ yarn add --dev @zebing/vite-plugin-wasm-pack
 Add the plugin to your `vite.config.js` file
 ```javascript
 import { defineConfig } from 'vite'
-import vitePluginWasmPack from '../dist';
+import vitePluginWasmPack from '@zebing/vite-plugin-wasm-pack';
 
 export default defineConfig({
   plugins: [
