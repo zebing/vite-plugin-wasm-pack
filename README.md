@@ -1,4 +1,6 @@
 # @zebing/vite-plugin-wasm-pack
+English | [中文](README_ZH.md)
+
 Vite plugin for wasm-pack, make rust projects and web projects coexist.
 
 ## Installation
