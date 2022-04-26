@@ -41,11 +41,11 @@ export default async function wasmPackPlugin(userConfig: UserConfig, mode: Mode)
     watcher.watch(watchFiles, watchDirectories, Date.now() - 10000);
 
     watcher.on('aggregated', () => {
-      buildWasmPack(flags, options, args);
+      buildWasmPack(flags, options, args, isDev);
     })
   }
 
-  await buildWasmPack(flags, options, args);
+  await buildWasmPack(flags, options, args, isDev);
 }
 
 const checkWasmPack = (): boolean => {
@@ -53,21 +53,38 @@ const checkWasmPack = (): boolean => {
   return existsSync(binPath);
 }
 
-const buildWasmPack = (flags: string, options: string, args: string): Promise<any> => {
+const buildWasmPack = async (flags: string, options: string, args: string, isDev: boolean): Promise<any> => {
   const wasmPackBin = findWasmPack()
-  const allArgs = 
-    `${flags} ${options} build ${args}`
-      .trim()
-      .split(' ')
-      .filter((x) => x);
-
+  const argList = args.split(' ').filter((x) => x);
+  const preArgList = `${flags} ${options} build`.split(' ').filter((x) => x);
+  const allArgs = [...preArgList, ...argList];
   const spawnOptions: SpawnOptions = {
-      cwd: process.cwd(),
-      stdio: 'inherit',
+    cwd: process.cwd(),
+    stdio: 'inherit',
   }
 
-  console.log(`> wasm-pack ${allArgs.join(' ')}`);
-  return runSpawn(wasmPackBin, allArgs, spawnOptions);
+  if (isDev) {
+    const crateDirectory = argList[0];
+    const userOutFolderIndex = allArgs.indexOf('--out-dir');
+    const outFolder = path.resolve(process.cwd(), './node_modules/.zebing/vite-plugin-wasm-pack/pkg');
+    let userOutFolder = `${crateDirectory}/pkg`;
+
+    if (userOutFolderIndex > -1) {
+      userOutFolder = path.resolve(crateDirectory, allArgs[userOutFolderIndex + 1])
+      allArgs.splice(userOutFolderIndex + 1, 1, outFolder);
+    } else {
+      allArgs.push('--out-dir');
+      allArgs.push(outFolder);
+    }
+
+    console.log(`> wasm-pack ${[...preArgList, ...argList].join(' ')}`);
+    await runSpawn(wasmPackBin, allArgs, spawnOptions);
+    await runSpawn('cp', ['-rf', outFolder + '/', userOutFolder], spawnOptions);
+
+  } else {
+    console.log(`> wasm-pack ${[...preArgList, ...argList].join(' ')}`);
+    await runSpawn(wasmPackBin, allArgs, spawnOptions);
+  }
 }
 
 const runSpawn = (bin: string, args: string[], options: SpawnOptions): Promise<void> => {
